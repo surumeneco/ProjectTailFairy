@@ -2,6 +2,8 @@
 
 **Self-organizing AGI agent based on Spiking Neural Networks**
 
+> Full TypeScript implementation with WebGPU acceleration
+
 ## Overview
 
 This project implements a biologically-inspired artificial general intelligence system using:
@@ -10,30 +12,51 @@ This project implements a biologically-inspired artificial general intelligence 
 - **Homeostatic Control** - Firing rate and threshold regulation
 - **Internal Models** - World model and self-model
 
+## Tech Stack
+
+- **Language**: TypeScript (全体統一)
+- **GPU Computing**: WebGPU + WGSL compute shaders
+- **Runtime**: Deno / Bun / Node.js
+- **Frontend**: Nuxt 3 + Vue 3
+- **Visualization**: D3.js / Three.js
+
 ## Project Structure
 
 ```
 ProjectTailFairy/
-├── core/                    # AGI Core Engine
-│   ├── neuron/             # Neuron implementations (LIF, etc.)
-│   ├── synapse/            # Synapse and weight management
-│   ├── learning/           # R-STDP, eligibility traces
-│   ├── homeostasis/        # Firing rate & threshold adjustment
-│   ├── plasticity/         # Structural plasticity
-│   └── models/             # Internal model, self-model
-├── experiments/            # Verification Space (separated from core)
-│   ├── phase1_fixed/       # Phase 1: Fixed structure learning
-│   ├── phase2_synapse/     # Phase 2: Synaptic plasticity
-│   ├── phase3_neuron/      # Phase 3: Neuronal plasticity
-│   ├── sandbox/            # Free experimentation
-│   └── benchmarks/         # Benchmarks
-├── simulation/             # Simulation Environment
-│   ├── environments/       # Task environments
-│   └── visualization/      # Visualization tools
-├── tests/                  # Unit tests
-├── tools/                  # Utilities
-├── configs/                # Configuration files
-└── docs/                   # Documentation
+├── packages/                # Monorepo packages
+│   ├── core/               # 🧠 SNN Core Engine (TypeScript + WebGPU)
+│   │   ├── src/
+│   │   │   ├── neuron/     # Neuron implementations (LIF, etc.)
+│   │   │   ├── synapse/    # Synapse and weight management
+│   │   │   ├── learning/   # R-STDP, eligibility traces
+│   │   │   ├── homeostasis/# Firing rate & threshold adjustment
+│   │   │   ├── plasticity/ # Structural plasticity
+│   │   │   ├── models/     # Internal model, self-model
+│   │   │   └── gpu/        # WebGPU compute shaders
+│   │   └── shaders/        # WGSL shader files
+│   ├── simulation/         # 🎮 Simulation runtime
+│   │   ├── src/
+│   │   │   ├── environment/# Task environments
+│   │   │   └── runner/     # Simulation execution
+│   │   └── ...
+│   └── shared/             # 📦 Shared types & utilities
+│       └── src/
+├── apps/                   # Applications
+│   ├── web/               # 🌐 Nuxt 3 Frontend
+│   │   ├── pages/
+│   │   ├── components/
+│   │   └── ...
+│   └── cli/               # ⌨️ CLI tools
+├── experiments/           # 🧪 Verification Space
+│   ├── phase1-fixed/      # Phase 1: Fixed structure learning
+│   ├── phase2-synapse/    # Phase 2: Synaptic plasticity
+│   ├── phase3-neuron/     # Phase 3: Neuronal plasticity
+│   ├── sandbox/           # Free experimentation
+│   └── benchmarks/        # Performance benchmarks
+├── tests/                 # ✅ Test suites
+├── docs/                  # 📚 Documentation
+└── tools/                 # 🔧 Build & dev tools
 ```
 
 ## Branch Strategy
@@ -43,6 +66,30 @@ ProjectTailFairy/
 - `feature/*` - Feature development
 - `experiment/*` - Experimental branches (safe to break)
 - `math/*` - Mathematical verification branches
+
+## Getting Started
+
+```bash
+# Install dependencies (using pnpm)
+pnpm install
+
+# Run development server
+pnpm dev
+
+# Run tests
+pnpm test
+
+# Build all packages
+pnpm build
+```
+
+## WebGPU Requirements
+
+WebGPU is required for GPU-accelerated computation. Supported environments:
+- Chrome 113+ / Edge 113+
+- Firefox Nightly (with flags)
+- Deno 1.39+
+- Node.js 22+ (with `--experimental-webgpu`)
 
 ## Verification Phases
 
@@ -63,4 +110,4 @@ ProjectTailFairy/
 
 ## License
 
-TBD
+MIT
