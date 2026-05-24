@@ -1,16 +1,12 @@
-# Python
-__pycache__/
-*.py[cod]
-*$py.class
-*.so
-.Python
-env/
-venv/
-.venv/
-ENV/
-.eggs/
-*.egg-info/
-*.egg
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build outputs
+dist/
+.nuxt/
+.output/
+.turbo/
 
 # IDE
 .idea/
@@ -19,34 +15,27 @@ ENV/
 *.swo
 *~
 
-# Jupyter
-.ipynb_checkpoints/
-
 # Testing
-.pytest_cache/
-.coverage
-htmlcov/
-
-# Data
-*.npy
-*.npz
-*.h5
-*.hdf5
-data/
-outputs/
+coverage/
+.vitest/
 
 # Logs
 logs/
 *.log
+npm-debug.log*
 
 # OS
 .DS_Store
 Thumbs.db
 
+# Environment
+.env
+.env.local
+.env.*.local
+
 # Experiment outputs
 experiments/**/results/
 experiments/**/checkpoints/
 
-# Configs with secrets
-configs/local/
-*.env
+# WebGPU shader cache
+.gpu-cache/
