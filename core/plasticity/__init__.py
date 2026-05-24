@@ -1,1 +1,0 @@
-"""ProjectTailFairy core.plasticity module"""
