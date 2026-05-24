@@ -1,1 +1,0 @@
-"""ProjectTailFairy core.homeostasis module"""
