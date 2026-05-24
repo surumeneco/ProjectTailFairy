@@ -1,0 +1,1 @@
+"""ProjectTailFairy core.synapse module"""
