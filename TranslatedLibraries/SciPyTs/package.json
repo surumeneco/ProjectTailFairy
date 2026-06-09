@@ -1,6 +1,7 @@
 {
-  "name": "@project-tail-fairy/model",
+  "name": "@project-tail-fairy/scipy-ts",
   "version": "0.1.0",
+  "description": "TypeScript translation of SciPy-style scientific APIs",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -8,19 +9,30 @@
     ".": {
       "import": "./dist/index.js",
       "types": "./dist/index.d.ts"
+    },
+    "./linalg": {
+      "import": "./dist/linalg.js",
+      "types": "./dist/linalg.d.ts"
+    },
+    "./special": {
+      "import": "./dist/special.js",
+      "types": "./dist/special.d.ts"
+    },
+    "./stats": {
+      "import": "./dist/stats.js",
+      "types": "./dist/stats.d.ts"
     }
   },
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",
     "test": "vitest run",
-    "lint": "eslint src/ tests/"
+    "lint": "eslint src/"
   },
   "dependencies": {
     "@project-tail-fairy/numpy-ts": "workspace:*"
   },
   "devDependencies": {
-    "@webgpu/types": "^0.1.40",
     "typescript": "^5.3.0",
     "vitest": "^1.0.0"
   }

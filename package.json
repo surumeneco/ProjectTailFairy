@@ -9,8 +9,9 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "test": "pnpm -r test",
-    "test:model": "pnpm --filter @tail-fairy/model test",
-    "test:numerical": "pnpm --filter @tail-fairy/numerical test"
+    "test:model": "pnpm --filter @project-tail-fairy/model test",
+    "test:numpy": "pnpm --filter @project-tail-fairy/numpy-ts test",
+    "test:scipy": "pnpm --filter @project-tail-fairy/scipy-ts test"
   },
   "devDependencies": {
     "@eslint/js": "^9.0.0",

@@ -32,7 +32,10 @@ ProjectTailFairy/
 │   │       └── Gpu/        # WebGPU code + .wgsl shaders (excluded from Prettier)
 │   └── tests/              # Vitest implementation-verification tests
 ├── TranslatedLibraries/    # Publish target(s): Python-translated libraries
-│   └── Numerical/          # NumPy/SciPy-style numerical computing (array/matrix/vector/stats)
+│   ├── NumPyTs/            # NumPy translation (`import * as np from "@project-tail-fairy/numpy-ts"`)
+│   │   ├── src/
+│   │   └── tests/
+│   └── SciPyTs/            # SciPy translation (`import * as scipy from "@project-tail-fairy/scipy-ts"`)
 │       ├── src/
 │       └── tests/
 ├── Playground/             # Not published: Nuxt verification environment
@@ -43,7 +46,7 @@ ProjectTailFairy/
 ```
 
 **Dependencies (one-directional; reverse imports prohibited):**
-`Playground` (pages) → `Model/Classes` → `Model/Utils`; `Playground`/`Model` → `TranslatedLibraries`. `TranslatedLibraries` depends on nothing else (pure TypeScript / published TS modules only).
+`Playground` (pages) → `Model/Classes` → `Model/Utils`; `Playground`/`Model` → `TranslatedLibraries/NumPyTs`; `TranslatedLibraries/SciPyTs` → `TranslatedLibraries/NumPyTs`. Reverse imports are prohibited.
 
 ## Branch Strategy
 
@@ -63,7 +66,8 @@ pnpm lint            # ESLint
 pnpm format          # Prettier write
 pnpm test            # Run all package tests
 pnpm test:model      # Model only
-pnpm test:numerical  # Numerical library only
+pnpm test:numpy      # NumPyTs only
+pnpm test:scipy      # SciPyTs only
 ```
 
 ## WebGPU Requirements

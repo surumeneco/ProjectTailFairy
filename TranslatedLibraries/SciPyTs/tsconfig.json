@@ -1,11 +1,8 @@
 {
-  "extends": "../tsconfig.json",
+  "extends": "../../tsconfig.json",
   "compilerOptions": {
     "outDir": "./dist",
-    "rootDir": "./src",
-    "types": [
-      "@webgpu/types"
-    ]
+    "rootDir": "./src"
   },
   "include": [
     "src/**/*",
@@ -17,7 +14,7 @@
   ],
   "references": [
     {
-      "path": "../TranslatedLibraries/NumPyTs"
+      "path": "../NumPyTs"
     }
   ]
 }

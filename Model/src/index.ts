@@ -1,5 +1,5 @@
 /**
- * @tail-fairy/model
+ * @project-tail-fairy/model
  * Spiking Neural Network model (WebGPU accelerated).
  *
  * 公開範囲（カプセル化）: 外部へ export するのは最外殻のエージェントクラスと

@@ -97,8 +97,8 @@ export const trace = (m: Matrix): number => {
   return t
 }
 
-// LU decomposition with partial pivoting, returns {L, U, P, parity}
-export const lu = (m: Matrix): { L: Matrix; U: Matrix; P: number[]; parity: number } => {
+// LU decomposition with partial pivoting, used internally by det / solve / inv.
+const luDecompose = (m: Matrix): { L: Matrix; U: Matrix; P: number[]; parity: number } => {
   const n = m.rows
   const U = matClone(m), L = eye(n)
   const P = Array.from({ length: n }, (_, i) => i)
@@ -131,7 +131,7 @@ export const lu = (m: Matrix): { L: Matrix; U: Matrix; P: number[]; parity: numb
 }
 
 export const det = (m: Matrix): number => {
-  const { U, parity } = lu(m)
+  const { U, parity } = luDecompose(m)
   let d = parity
   for (let i = 0; i < m.rows; i++) d *= U.data[i * m.cols + i]
   return d
@@ -139,7 +139,7 @@ export const det = (m: Matrix): number => {
 
 // Solve Ax = b using LU decomposition
 export const solve = (A: Matrix, b: number[] | Float64Array): Float64Array => {
-  const { L, U, P } = lu(A)
+  const { L, U, P } = luDecompose(A)
   const n = A.rows
   const pb = new Float64Array(n)
   for (let i = 0; i < n; i++) pb[i] = b[P[i]]
@@ -176,25 +176,6 @@ export const norm = (m: Matrix): number => {
   let s = 0
   for (let i = 0; i < m.data.length; i++) s += m.data[i] * m.data[i]
   return Math.sqrt(s)
-}
-
-// Power iteration for dominant eigenvalue/vector
-export const powerIteration = (m: Matrix, maxIter = 100, tol = 1e-10): { eigenvalue: number; eigenvector: Float64Array } => {
-  const n = m.rows
-  let v = new Float64Array(n).fill(1 / Math.sqrt(n))
-  let lambda = 0
-  for (let iter = 0; iter < maxIter; iter++) {
-    const Av = new Float64Array(n)
-    for (let i = 0; i < n; i++) for (let j = 0; j < n; j++) Av[i] += m.data[i * n + j] * v[j]
-    let nrm = 0
-    for (let i = 0; i < n; i++) nrm += Av[i] * Av[i]
-    nrm = Math.sqrt(nrm)
-    const newLambda = nrm
-    for (let i = 0; i < n; i++) Av[i] /= nrm
-    if (Math.abs(newLambda - lambda) < tol) return { eigenvalue: newLambda, eigenvector: Av }
-    v = Av; lambda = newLambda
-  }
-  return { eigenvalue: lambda, eigenvector: v }
 }
 
 // QR decomposition using Gram-Schmidt
@@ -244,24 +225,6 @@ export const cholesky = (m: Matrix): Matrix => {
     }
   }
   return L
-}
-
-// Matrix exponential via Pade approximation (order 6)
-export const expm = (m: Matrix): Matrix => {
-  const n = m.rows
-  const nrm = norm(m)
-  const s = Math.max(0, Math.ceil(Math.log2(nrm / 5.4)))
-  const A = scale(m, Math.pow(2, -s))
-  const A2 = mul(A, A), A4 = mul(A2, A2), A6 = mul(A2, A4)
-  const I = eye(n)
-  const b = [64764752532480000, 32382376266240000, 7771770303897600, 1187353796428800, 129060195264000, 10559470521600, 670442572800, 33522128640, 1323241920, 40840800, 960960, 16380, 182, 1]
-  const U = add(add(add(scale(A6, b[13]), scale(A4, b[11])), scale(A2, b[9])), scale(I, b[7]))
-  const V = add(add(add(scale(A6, b[12]), scale(A4, b[10])), scale(A2, b[8])), scale(I, b[6]))
-  const U2 = mul(A, add(add(mul(A6, add(add(scale(A6, b[13]), scale(A4, b[11])), scale(A2, b[9]))), scale(A4, b[5])), add(scale(A2, b[3]), scale(I, b[1]))))
-  const V2 = add(mul(A6, add(add(scale(A6, b[12]), scale(A4, b[10])), scale(A2, b[8]))), add(scale(A4, b[4]), add(scale(A2, b[2]), scale(I, b[0]))))
-  let F = mul(inv(sub(V2, U2)), add(V2, U2))
-  for (let k = 0; k < s; k++) F = mul(F, F)
-  return F
 }
 
 export const sumRows = (m: Matrix): Float64Array => {

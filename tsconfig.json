@@ -1,4 +1,16 @@
 {
+  "files": [],
+  "references": [
+    {
+      "path": "./TranslatedLibraries/NumPyTs"
+    },
+    {
+      "path": "./TranslatedLibraries/SciPyTs"
+    },
+    {
+      "path": "./Model"
+    }
+  ],
   "compilerOptions": {
     "target": "ES2022",
     "module": "ESNext",
