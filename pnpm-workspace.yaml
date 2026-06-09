@@ -1,3 +1,4 @@
 packages:
-  - 'packages/*'
-  - 'apps/*'
+  - 'Model'
+  - 'TranslatedLibraries/*'
+  - 'Playground'
