@@ -15,6 +15,15 @@
     "target": "ES2022",
     "module": "ESNext",
     "moduleResolution": "bundler",
+    "baseUrl": ".",
+    "paths": {
+      "@project-tail-fairy/numpy-ts": ["./TranslatedLibraries/NumPyTs/src/index.ts"],
+      "@project-tail-fairy/numpy-ts/*": ["./TranslatedLibraries/NumPyTs/src/*"],
+      "@project-tail-fairy/scipy-ts": ["./TranslatedLibraries/SciPyTs/src/index.ts"],
+      "@project-tail-fairy/scipy-ts/*": ["./TranslatedLibraries/SciPyTs/src/*"],
+      "@project-tail-fairy/model": ["./Model/src/index.ts"],
+      "@project-tail-fairy/model/*": ["./Model/src/*"]
+    },
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,

@@ -1,5 +1,8 @@
-export type { Matrix } from './matrix'
+/**
+ * NumPy の `numpy.linalg` 公開エントリです。
+ */
 
+export type { Matrix } from "./matrix";
 export {
   add,
   cholesky,
@@ -14,12 +17,12 @@ export {
   matClone,
   matFromArr,
   matGet,
+  mul as matmul,
   matSet,
   matToArr,
   meanCols,
   meanRows,
   mul,
-  mul as matmul,
   norm,
   ones,
   outer,
@@ -32,4 +35,4 @@ export {
   trace,
   transpose,
   zeros
-} from './matrix'
+} from "./matrix";
