@@ -1,4 +1,8 @@
-import type { NDArray } from './array'
+/**
+ * NumPy 互換 API の公開エントリです。
+ */
+
+import type { NDArray } from "./array";
 import {
   abs as absArray,
   add as addArray,
@@ -28,6 +32,9 @@ import {
   ndarray,
   ones,
   pow as powArray,
+  rand,
+  randint,
+  randn,
   reshape,
   roll,
   scale as scaleArray,
@@ -45,12 +52,28 @@ import {
   transpose,
   where,
   zeros
-} from './array'
+} from "./array";
 import {
-  angle,
+  corrcoef,
+  corrMatrix,
+  cov,
+  covMatrix,
+  histogram,
+  median,
+  percentile,
+  polyreg,
+  polyval,
+  quantile,
+  std,
+  variance,
+  weightedMean
+} from "./stats";
+import type { Vec } from "./vector";
+import {
   abs as absVec,
   add as addVec,
   addScalar as addScalarVec,
+  angle,
   argmax as argmaxVec,
   argmin as argminVec,
   argsort,
@@ -60,8 +83,8 @@ import {
   correlate,
   cos as cosVec,
   cross,
-  cumsum,
   cumprod,
+  cumsum,
   diff,
   distance,
   distance2,
@@ -84,10 +107,10 @@ import {
   reverse,
   scale as scaleVec,
   sin as sinVec,
+  slerp,
   slice,
   sort,
   sqrt as sqrtVec,
-  slerp,
   sub as subVec,
   sum as sumVec,
   tan,
@@ -95,156 +118,391 @@ import {
   vec,
   vecClone,
   vecFromArr
-} from './vector'
-import { corrMatrix, corrcoef, cov, covMatrix, histogram, median, percentile, polyreg, polyval, quantile, std, variance, weightedMean } from './stats'
-import type { Vec } from './vector'
+} from "./vector";
 
-const isNDArray = (value: NDArray | Vec): value is NDArray => !ArrayBuffer.isView(value)
+//#region 内部ヘルパー
 
-export function add(a: NDArray, b: NDArray): NDArray
-export function add(a: Vec, b: Vec): Vec
-export function add(a: NDArray | Vec, b: NDArray | Vec): NDArray | Vec {
-  return isNDArray(a) && isNDArray(b) ? addArray(a, b) : addVec(a as Vec, b as Vec)
+/**
+ * 値が NDArray かどうかを判定します。
+ * @param value 判定対象です。
+ * @returns NDArray の場合は true です。
+ */
+const isNdarray = (value: NDArray | Vec): value is NDArray => !ArrayBuffer.isView(value);
+
+//#endregion
+
+//#region 統合演算
+
+/**
+ * 要素ごとに加算します。
+ * @param left 左辺値です。
+ * @param right 右辺値です。
+ * @returns 加算結果です。
+ */
+export function add(left: NDArray, right: NDArray): NDArray;
+export function add(left: Vec, right: Vec): Vec;
+/**
+ * NDArray と Vec の両方へ対応する加算実装です。
+ * @param left 左辺値です。
+ * @param right 右辺値です。
+ * @returns 加算結果です。
+ */
+export function add(left: NDArray | Vec, right: NDArray | Vec): NDArray | Vec {
+  return isNdarray(left) && isNdarray(right) ? addArray(left, right) : addVec(left as Vec, right as Vec);
 }
 
-export function sub(a: NDArray, b: NDArray): NDArray
-export function sub(a: Vec, b: Vec): Vec
-export function sub(a: NDArray | Vec, b: NDArray | Vec): NDArray | Vec {
-  return isNDArray(a) && isNDArray(b) ? subArray(a, b) : subVec(a as Vec, b as Vec)
+/**
+ * 要素ごとに減算します。
+ * @param left 左辺値です。
+ * @param right 右辺値です。
+ * @returns 減算結果です。
+ */
+export function sub(left: NDArray, right: NDArray): NDArray;
+export function sub(left: Vec, right: Vec): Vec;
+/**
+ * NDArray と Vec の両方へ対応する減算実装です。
+ * @param left 左辺値です。
+ * @param right 右辺値です。
+ * @returns 減算結果です。
+ */
+export function sub(left: NDArray | Vec, right: NDArray | Vec): NDArray | Vec {
+  return isNdarray(left) && isNdarray(right) ? subArray(left, right) : subVec(left as Vec, right as Vec);
 }
 
-export function mul(a: NDArray, b: NDArray): NDArray
-export function mul(a: Vec, b: Vec): Vec
-export function mul(a: NDArray | Vec, b: NDArray | Vec): NDArray | Vec {
-  return isNDArray(a) && isNDArray(b) ? mulArray(a, b) : mulVec(a as Vec, b as Vec)
+/**
+ * 要素ごとに乗算します。
+ * @param left 左辺値です。
+ * @param right 右辺値です。
+ * @returns 乗算結果です。
+ */
+export function mul(left: NDArray, right: NDArray): NDArray;
+export function mul(left: Vec, right: Vec): Vec;
+/**
+ * NDArray と Vec の両方へ対応する乗算実装です。
+ * @param left 左辺値です。
+ * @param right 右辺値です。
+ * @returns 乗算結果です。
+ */
+export function mul(left: NDArray | Vec, right: NDArray | Vec): NDArray | Vec {
+  return isNdarray(left) && isNdarray(right) ? mulArray(left, right) : mulVec(left as Vec, right as Vec);
 }
 
-export function div(a: NDArray, b: NDArray): NDArray
-export function div(a: Vec, b: Vec): Vec
-export function div(a: NDArray | Vec, b: NDArray | Vec): NDArray | Vec {
-  return isNDArray(a) && isNDArray(b) ? divArray(a, b) : divVec(a as Vec, b as Vec)
+/**
+ * 要素ごとに除算します。
+ * @param left 左辺値です。
+ * @param right 右辺値です。
+ * @returns 除算結果です。
+ */
+export function div(left: NDArray, right: NDArray): NDArray;
+export function div(left: Vec, right: Vec): Vec;
+/**
+ * NDArray と Vec の両方へ対応する除算実装です。
+ * @param left 左辺値です。
+ * @param right 右辺値です。
+ * @returns 除算結果です。
+ */
+export function div(left: NDArray | Vec, right: NDArray | Vec): NDArray | Vec {
+  return isNdarray(left) && isNdarray(right) ? divArray(left, right) : divVec(left as Vec, right as Vec);
 }
 
-export function scale(value: NDArray, scalar: number): NDArray
-export function scale(value: Vec, scalar: number): Vec
+/**
+ * スカラー倍します。
+ * @param value 入力値です。
+ * @param scalar スカラー値です。
+ * @returns 計算結果です。
+ */
+export function scale(value: NDArray, scalar: number): NDArray;
+export function scale(value: Vec, scalar: number): Vec;
+/**
+ * NDArray と Vec の両方へ対応するスカラー倍実装です。
+ * @param value 入力値です。
+ * @param scalar スカラー値です。
+ * @returns 計算結果です。
+ */
 export function scale(value: NDArray | Vec, scalar: number): NDArray | Vec {
-  return isNDArray(value) ? scaleArray(value, scalar) : scaleVec(value, scalar)
+  return isNdarray(value) ? scaleArray(value, scalar) : scaleVec(value, scalar);
 }
 
-export function addScalar(value: NDArray, scalar: number): NDArray
-export function addScalar(value: Vec, scalar: number): Vec
+/**
+ * スカラーを加算します。
+ * @param value 入力値です。
+ * @param scalar スカラー値です。
+ * @returns 計算結果です。
+ */
+export function addScalar(value: NDArray, scalar: number): NDArray;
+export function addScalar(value: Vec, scalar: number): Vec;
+/**
+ * NDArray と Vec の両方へ対応するスカラー加算実装です。
+ * @param value 入力値です。
+ * @param scalar スカラー値です。
+ * @returns 計算結果です。
+ */
 export function addScalar(value: NDArray | Vec, scalar: number): NDArray | Vec {
-  return isNDArray(value) ? addScalarArray(value, scalar) : addScalarVec(value, scalar)
+  return isNdarray(value) ? addScalarArray(value, scalar) : addScalarVec(value, scalar);
 }
 
-export function pow(value: NDArray, power: number): NDArray
-export function pow(value: Vec, power: number): Vec
+/**
+ * 冪乗を計算します。
+ * @param value 入力値です。
+ * @param power 指数です。
+ * @returns 計算結果です。
+ */
+export function pow(value: NDArray, power: number): NDArray;
+export function pow(value: Vec, power: number): Vec;
+/**
+ * NDArray と Vec の両方へ対応する冪乗実装です。
+ * @param value 入力値です。
+ * @param power 指数です。
+ * @returns 計算結果です。
+ */
 export function pow(value: NDArray | Vec, power: number): NDArray | Vec {
-  return isNDArray(value) ? powArray(value, power) : powVec(value, power)
+  return isNdarray(value) ? powArray(value, power) : powVec(value, power);
 }
 
-export function sqrt(value: NDArray): NDArray
-export function sqrt(value: Vec): Vec
+/**
+ * 平方根を計算します。
+ * @param value 入力値です。
+ * @returns 計算結果です。
+ */
+export function sqrt(value: NDArray): NDArray;
+export function sqrt(value: Vec): Vec;
+/**
+ * NDArray と Vec の両方へ対応する平方根実装です。
+ * @param value 入力値です。
+ * @returns 計算結果です。
+ */
 export function sqrt(value: NDArray | Vec): NDArray | Vec {
-  return isNDArray(value) ? sqrtArray(value) : sqrtVec(value)
+  return isNdarray(value) ? sqrtArray(value) : sqrtVec(value);
 }
 
-export function exp(value: NDArray): NDArray
-export function exp(value: Vec): Vec
+/**
+ * 指数関数を計算します。
+ * @param value 入力値です。
+ * @returns 計算結果です。
+ */
+export function exp(value: NDArray): NDArray;
+export function exp(value: Vec): Vec;
+/**
+ * NDArray と Vec の両方へ対応する指数関数実装です。
+ * @param value 入力値です。
+ * @returns 計算結果です。
+ */
 export function exp(value: NDArray | Vec): NDArray | Vec {
-  return isNDArray(value) ? expArray(value) : expVec(value)
+  return isNdarray(value) ? expArray(value) : expVec(value);
 }
 
-export function log(value: NDArray): NDArray
-export function log(value: Vec): Vec
+/**
+ * 自然対数を計算します。
+ * @param value 入力値です。
+ * @returns 計算結果です。
+ */
+export function log(value: NDArray): NDArray;
+export function log(value: Vec): Vec;
+/**
+ * NDArray と Vec の両方へ対応する対数実装です。
+ * @param value 入力値です。
+ * @returns 計算結果です。
+ */
 export function log(value: NDArray | Vec): NDArray | Vec {
-  return isNDArray(value) ? logArray(value) : logVec(value)
+  return isNdarray(value) ? logArray(value) : logVec(value);
 }
 
-export function abs(value: NDArray): NDArray
-export function abs(value: Vec): Vec
+/**
+ * 絶対値を計算します。
+ * @param value 入力値です。
+ * @returns 計算結果です。
+ */
+export function abs(value: NDArray): NDArray;
+export function abs(value: Vec): Vec;
+/**
+ * NDArray と Vec の両方へ対応する絶対値実装です。
+ * @param value 入力値です。
+ * @returns 計算結果です。
+ */
 export function abs(value: NDArray | Vec): NDArray | Vec {
-  return isNDArray(value) ? absArray(value) : absVec(value)
+  return isNdarray(value) ? absArray(value) : absVec(value);
 }
 
-export function sin(value: NDArray): NDArray
-export function sin(value: Vec): Vec
+/**
+ * 正弦を計算します。
+ * @param value 入力値です。
+ * @returns 計算結果です。
+ */
+export function sin(value: NDArray): NDArray;
+export function sin(value: Vec): Vec;
+/**
+ * NDArray と Vec の両方へ対応する正弦実装です。
+ * @param value 入力値です。
+ * @returns 計算結果です。
+ */
 export function sin(value: NDArray | Vec): NDArray | Vec {
-  return isNDArray(value) ? sinArray(value) : sinVec(value)
+  return isNdarray(value) ? sinArray(value) : sinVec(value);
 }
 
-export function cos(value: NDArray): NDArray
-export function cos(value: Vec): Vec
+/**
+ * 余弦を計算します。
+ * @param value 入力値です。
+ * @returns 計算結果です。
+ */
+export function cos(value: NDArray): NDArray;
+export function cos(value: Vec): Vec;
+/**
+ * NDArray と Vec の両方へ対応する余弦実装です。
+ * @param value 入力値です。
+ * @returns 計算結果です。
+ */
 export function cos(value: NDArray | Vec): NDArray | Vec {
-  return isNDArray(value) ? cosArray(value) : cosVec(value)
+  return isNdarray(value) ? cosArray(value) : cosVec(value);
 }
 
-export function tanh(value: NDArray): NDArray
-export function tanh(value: Vec): Vec
+/**
+ * 双曲線正接を計算します。
+ * @param value 入力値です。
+ * @returns 計算結果です。
+ */
+export function tanh(value: NDArray): NDArray;
+export function tanh(value: Vec): Vec;
+/**
+ * NDArray と Vec の両方へ対応する双曲線正接実装です。
+ * @param value 入力値です。
+ * @returns 計算結果です。
+ */
 export function tanh(value: NDArray | Vec): NDArray | Vec {
-  return isNDArray(value) ? tanhArray(value) : tanhVec(value)
+  return isNdarray(value) ? tanhArray(value) : tanhVec(value);
 }
 
-export function clip(value: NDArray, low: number, high: number): NDArray
-export function clip(value: Vec, low: number, high: number): Vec
+/**
+ * 値を範囲に切り詰めます。
+ * @param value 入力値です。
+ * @param low 下限値です。
+ * @param high 上限値です。
+ * @returns 計算結果です。
+ */
+export function clip(value: NDArray, low: number, high: number): NDArray;
+export function clip(value: Vec, low: number, high: number): Vec;
+/**
+ * NDArray と Vec の両方へ対応する切り詰め実装です。
+ * @param value 入力値です。
+ * @param low 下限値です。
+ * @param high 上限値です。
+ * @returns 計算結果です。
+ */
 export function clip(value: NDArray | Vec, low: number, high: number): NDArray | Vec {
-  return isNDArray(value) ? clipArray(value, low, high) : clipVec(value, low, high)
+  return isNdarray(value) ? clipArray(value, low, high) : clipVec(value, low, high);
 }
 
-export function sum(value: NDArray, axis?: number): NDArray | number
-export function sum(value: Vec): number
+/**
+ * 総和を計算します。
+ * @param value 入力値です。
+ * @param axis 集約軸です。
+ * @returns 計算結果です。
+ */
+export function sum(value: NDArray, axis?: number): NDArray | number;
+export function sum(value: Vec): number;
+/**
+ * NDArray と Vec の両方へ対応する総和実装です。
+ * @param value 入力値です。
+ * @param axis 集約軸です。
+ * @returns 計算結果です。
+ */
 export function sum(value: NDArray | Vec, axis?: number): NDArray | number {
-  return isNDArray(value) ? sumArray(value, axis) : sumVec(value)
+  return isNdarray(value) ? sumArray(value, axis) : sumVec(value);
 }
 
-export function mean(value: NDArray, axis?: number): NDArray | number
-export function mean(value: Vec): number
+/**
+ * 平均値を計算します。
+ * @param value 入力値です。
+ * @param axis 集約軸です。
+ * @returns 計算結果です。
+ */
+export function mean(value: NDArray, axis?: number): NDArray | number;
+export function mean(value: Vec): number;
+/**
+ * NDArray と Vec の両方へ対応する平均値実装です。
+ * @param value 入力値です。
+ * @param axis 集約軸です。
+ * @returns 計算結果です。
+ */
 export function mean(value: NDArray | Vec, axis?: number): NDArray | number {
-  return isNDArray(value) ? meanArray(value, axis) : meanVec(value)
+  return isNdarray(value) ? meanArray(value, axis) : meanVec(value);
 }
 
-export function max(value: NDArray, axis?: number): NDArray | number
-export function max(value: Vec): number
+/**
+ * 最大値を計算します。
+ * @param value 入力値です。
+ * @param axis 集約軸です。
+ * @returns 計算結果です。
+ */
+export function max(value: NDArray, axis?: number): NDArray | number;
+export function max(value: Vec): number;
+/**
+ * NDArray と Vec の両方へ対応する最大値実装です。
+ * @param value 入力値です。
+ * @param axis 集約軸です。
+ * @returns 計算結果です。
+ */
 export function max(value: NDArray | Vec, axis?: number): NDArray | number {
-  return isNDArray(value) ? maxArray(value, axis) : maxVec(value)
+  return isNdarray(value) ? maxArray(value, axis) : maxVec(value);
 }
 
-export function min(value: NDArray, axis?: number): NDArray | number
-export function min(value: Vec): number
+/**
+ * 最小値を計算します。
+ * @param value 入力値です。
+ * @param axis 集約軸です。
+ * @returns 計算結果です。
+ */
+export function min(value: NDArray, axis?: number): NDArray | number;
+export function min(value: Vec): number;
+/**
+ * NDArray と Vec の両方へ対応する最小値実装です。
+ * @param value 入力値です。
+ * @param axis 集約軸です。
+ * @returns 計算結果です。
+ */
 export function min(value: NDArray | Vec, axis?: number): NDArray | number {
-  return isNDArray(value) ? minArray(value, axis) : minVec(value)
+  return isNdarray(value) ? minArray(value, axis) : minVec(value);
 }
 
-export function argmax(value: NDArray): number
-export function argmax(value: Vec): number
-export function argmax(value: NDArray | Vec): number {
-  return isNDArray(value) ? argmaxArray(value) : argmaxVec(value)
-}
+/**
+ * 最大値の添字を返します。
+ * @param value 入力値です。
+ * @returns 添字です。
+ */
+export const argmax = (value: NDArray | Vec): number => (isNdarray(value) ? argmaxArray(value) : argmaxVec(value));
 
-export function argmin(value: NDArray): number
-export function argmin(value: Vec): number
-export function argmin(value: NDArray | Vec): number {
-  return isNDArray(value) ? argminArray(value) : argminVec(value)
-}
+/**
+ * 最小値の添字を返します。
+ * @param value 入力値です。
+ * @returns 添字です。
+ */
+export const argmin = (value: NDArray | Vec): number => (isNdarray(value) ? argminArray(value) : argminVec(value));
 
-export * as linalg from './linalg'
-export * as random from './random'
+//#endregion
+
+//#region 名前空間
+
+export * as linalg from "./linalg";
+export * as random from "./random";
+
+//#endregion
+
+//#region 直接公開
 
 export {
   angle,
   arange,
   argsort,
-  concatenate,
   concat,
+  concatenate,
   convolve,
+  corrcoef,
   correlate,
   corrMatrix,
-  corrcoef,
   cov,
   covMatrix,
   cross,
-  cumsum,
   cumprod,
+  cumsum,
   diag,
   diff,
   distance,
@@ -272,15 +530,18 @@ export {
   polyval,
   project,
   quantile,
+  rand,
+  randint,
+  randn,
   reflect,
   reshape,
   reverse,
   roll,
   set,
+  slerp,
   slice,
   sort,
   split,
-  slerp,
   squeeze,
   stack,
   std,
@@ -295,10 +556,16 @@ export {
   weightedMean,
   where,
   zeros
-}
+};
 
-export { variance as var, weightedMean as average, polyreg as polyfit }
+export { weightedMean as average, polyreg as polyfit, variance as var };
 
-export type { Matrix } from './matrix'
-export type { NDArray } from './array'
-export type { Vec } from './vector'
+//#endregion
+
+//#region 型公開
+
+export type { NDArray } from "./array";
+export type { Matrix } from "./matrix";
+export type { Vec } from "./vector";
+
+//#endregion

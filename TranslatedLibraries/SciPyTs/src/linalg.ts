@@ -1,73 +1,147 @@
-import { linalg as npLinalg, type Matrix } from '@project-tail-fairy/numpy-ts'
+/**
+ * SciPy の `scipy.linalg` 相当関数を TypeScript へ翻訳した実装です。
+ */
 
-export const lu = (m: Matrix): { L: Matrix; U: Matrix; P: number[]; parity: number } => {
-  const n = m.rows
-  const U = npLinalg.matClone(m)
-  const L = npLinalg.eye(n)
-  const P = Array.from({ length: n }, (_, i) => i)
-  let parity = 1
-  for (let k = 0; k < n; k++) {
-    let maxValue = 0
-    let maxIndex = k
-    for (let i = k; i < n; i++) {
-      const value = Math.abs(U.data[i * n + k])
-      if (value > maxValue) {
-        maxValue = value
-        maxIndex = i
+import { linalg as npLinalg, type Matrix } from "@project-tail-fairy/numpy-ts";
+
+//#region 定数
+
+const ZERO_TOLERANCE = 1e-12;
+const PADE_THETA_13 = 5.4;
+const PADE_13_COEFFICIENTS = [
+  64764752532480000, 32382376266240000, 7771770303897600, 1187353796428800, 129060195264000, 10559470521600,
+  670442572800, 33522128640, 1323241920, 40840800, 960960, 16380, 182, 1
+];
+
+//#endregion
+
+//#region 公開関数
+
+/**
+ * LU 分解を計算します。
+ * @param input_matrix 入力行列です。
+ * @returns 分解結果です。
+ */
+export const lu = (input_matrix: Matrix): { L: Matrix; U: Matrix; P: number[]; parity: number } => {
+  const size = input_matrix.rows;
+  const upper = npLinalg.matClone(input_matrix);
+  const lower = npLinalg.eye(size);
+  const permutation = Array.from({ length: size }, (_, index) => index);
+  let parity = 1;
+
+  for (let pivot_index = 0; pivot_index < size; pivot_index += 1) {
+    let max_value = 0;
+    let max_index = pivot_index;
+    for (let row_index = pivot_index; row_index < size; row_index += 1) {
+      const candidate_value = Math.abs(upper.data[row_index * size + pivot_index]);
+      if (candidate_value > max_value) {
+        max_value = candidate_value;
+        max_index = row_index;
       }
     }
-    if (maxIndex !== k) {
-      ;[P[k], P[maxIndex]] = [P[maxIndex], P[k]]
-      parity = -parity
-      for (let j = 0; j < n; j++) {
-        ;[U.data[k * n + j], U.data[maxIndex * n + j]] = [U.data[maxIndex * n + j], U.data[k * n + j]]
+
+    if (max_index !== pivot_index) {
+      [permutation[pivot_index], permutation[max_index]] = [permutation[max_index], permutation[pivot_index]];
+      parity *= -1;
+      for (let column_index = 0; column_index < size; column_index += 1) {
+        [upper.data[pivot_index * size + column_index], upper.data[max_index * size + column_index]] = [
+          upper.data[max_index * size + column_index],
+          upper.data[pivot_index * size + column_index]
+        ];
       }
-      for (let j = 0; j < k; j++) {
-        ;[L.data[k * n + j], L.data[maxIndex * n + j]] = [L.data[maxIndex * n + j], L.data[k * n + j]]
+      for (let column_index = 0; column_index < pivot_index; column_index += 1) {
+        [lower.data[pivot_index * size + column_index], lower.data[max_index * size + column_index]] = [
+          lower.data[max_index * size + column_index],
+          lower.data[pivot_index * size + column_index]
+        ];
       }
     }
-    const pivot = U.data[k * n + k]
-    if (Math.abs(pivot) < 1e-12) continue
-    for (let i = k + 1; i < n; i++) {
-      const factor = U.data[i * n + k] / pivot
-      L.data[i * n + k] = factor
-      for (let j = k; j < n; j++) U.data[i * n + j] -= factor * U.data[k * n + j]
+
+    const pivot_value = upper.data[pivot_index * size + pivot_index];
+    if (Math.abs(pivot_value) <= ZERO_TOLERANCE) {
+      continue;
+    }
+
+    for (let row_index = pivot_index + 1; row_index < size; row_index += 1) {
+      const factor = upper.data[row_index * size + pivot_index] / pivot_value;
+      lower.data[row_index * size + pivot_index] = factor;
+      for (let column_index = pivot_index; column_index < size; column_index += 1) {
+        upper.data[row_index * size + column_index] -= factor * upper.data[pivot_index * size + column_index];
+      }
     }
   }
-  return { L, U, P, parity }
-}
 
-export const expm = (m: Matrix): Matrix => {
-  const n = m.rows
-  const matrixNorm = npLinalg.norm(m)
-  const s = Math.max(0, Math.ceil(Math.log2(matrixNorm / 5.4)))
-  const scaled = npLinalg.scale(m, Math.pow(2, -s))
-  const A2 = npLinalg.mul(scaled, scaled)
-  const A4 = npLinalg.mul(A2, A2)
-  const A6 = npLinalg.mul(A2, A4)
-  const I = npLinalg.eye(n)
-  const b = [64764752532480000, 32382376266240000, 7771770303897600, 1187353796428800, 129060195264000, 10559470521600, 670442572800, 33522128640, 1323241920, 40840800, 960960, 16380, 182, 1]
-  const U2 = npLinalg.mul(
-    scaled,
+  return { L: lower, U: upper, P: permutation, parity };
+};
+
+/**
+ * 行列指数関数を計算します。
+ * @param input_matrix 入力行列です。
+ * @returns 行列指数関数です。
+ */
+export const expm = (input_matrix: Matrix): Matrix => {
+  const size = input_matrix.rows;
+  const matrix_norm = npLinalg.norm(input_matrix);
+  const scaling_exponent = Math.max(0, Math.ceil(Math.log2(matrix_norm / PADE_THETA_13)));
+  const scaled_matrix = npLinalg.scale(input_matrix, Math.pow(2, -scaling_exponent));
+  const matrix_square = npLinalg.mul(scaled_matrix, scaled_matrix);
+  const matrix_quartic = npLinalg.mul(matrix_square, matrix_square);
+  const matrix_sextic = npLinalg.mul(matrix_square, matrix_quartic);
+  const identity_matrix = npLinalg.eye(size);
+
+  const numerator_matrix = npLinalg.mul(
+    scaled_matrix,
     npLinalg.add(
       npLinalg.add(
         npLinalg.mul(
-          A6,
-          npLinalg.add(npLinalg.add(npLinalg.scale(A6, b[13]), npLinalg.scale(A4, b[11])), npLinalg.scale(A2, b[9]))
+          matrix_sextic,
+          npLinalg.add(
+            npLinalg.add(
+              npLinalg.scale(matrix_sextic, PADE_13_COEFFICIENTS[13]),
+              npLinalg.scale(matrix_quartic, PADE_13_COEFFICIENTS[11])
+            ),
+            npLinalg.scale(matrix_square, PADE_13_COEFFICIENTS[9])
+          )
         ),
-        npLinalg.scale(A4, b[5])
+        npLinalg.scale(matrix_quartic, PADE_13_COEFFICIENTS[5])
       ),
-      npLinalg.add(npLinalg.scale(A2, b[3]), npLinalg.scale(I, b[1]))
+      npLinalg.add(
+        npLinalg.scale(matrix_square, PADE_13_COEFFICIENTS[3]),
+        npLinalg.scale(identity_matrix, PADE_13_COEFFICIENTS[1])
+      )
     )
-  )
-  const V2 = npLinalg.add(
+  );
+
+  const denominator_matrix = npLinalg.add(
     npLinalg.mul(
-      A6,
-      npLinalg.add(npLinalg.add(npLinalg.scale(A6, b[12]), npLinalg.scale(A4, b[10])), npLinalg.scale(A2, b[8]))
+      matrix_sextic,
+      npLinalg.add(
+        npLinalg.add(
+          npLinalg.scale(matrix_sextic, PADE_13_COEFFICIENTS[12]),
+          npLinalg.scale(matrix_quartic, PADE_13_COEFFICIENTS[10])
+        ),
+        npLinalg.scale(matrix_square, PADE_13_COEFFICIENTS[8])
+      )
     ),
-    npLinalg.add(npLinalg.scale(A4, b[4]), npLinalg.add(npLinalg.scale(A2, b[2]), npLinalg.scale(I, b[0])))
-  )
-  let F = npLinalg.mul(npLinalg.inv(npLinalg.sub(V2, U2)), npLinalg.add(V2, U2))
-  for (let k = 0; k < s; k++) F = npLinalg.mul(F, F)
-  return F
-}
+    npLinalg.add(
+      npLinalg.scale(matrix_quartic, PADE_13_COEFFICIENTS[4]),
+      npLinalg.add(
+        npLinalg.scale(matrix_square, PADE_13_COEFFICIENTS[2]),
+        npLinalg.scale(identity_matrix, PADE_13_COEFFICIENTS[0])
+      )
+    )
+  );
+
+  let result_matrix = npLinalg.mul(
+    npLinalg.inv(npLinalg.sub(denominator_matrix, numerator_matrix)),
+    npLinalg.add(denominator_matrix, numerator_matrix)
+  );
+
+  for (let iteration = 0; iteration < scaling_exponent; iteration += 1) {
+    result_matrix = npLinalg.mul(result_matrix, result_matrix);
+  }
+
+  return result_matrix;
+};
+
+//#endregion

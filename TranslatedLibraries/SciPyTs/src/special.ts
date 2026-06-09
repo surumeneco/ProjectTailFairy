@@ -1,21 +1,70 @@
-import { max, type Vec } from '@project-tail-fairy/numpy-ts'
+/**
+ * SciPy の `scipy.special` 相当関数を TypeScript へ翻訳した実装です。
+ */
 
-export const sigmoid = (v: Vec): Vec => {
-  const result = new Float64Array(v.length)
-  for (let i = 0; i < v.length; i++) result[i] = 1 / (1 + Math.exp(-v[i]))
-  return result
-}
+import { max, type Vec } from "@project-tail-fairy/numpy-ts";
 
-export const expit = sigmoid
+//#region 内部ヘルパー
 
-export const softmax = (v: Vec): Vec => {
-  const maxValue = max(v)
-  const result = new Float64Array(v.length)
-  let sum = 0
-  for (let i = 0; i < v.length; i++) {
-    result[i] = Math.exp(v[i] - maxValue)
-    sum += result[i]
+/**
+ * スカラー値が有限かを検証します。
+ * @param value 検証対象の値です。
+ * @param variable_name 変数名です。
+ * @returns 検証済みの値です。
+ */
+const assertFiniteScalar = (value: number, variable_name: string): number => {
+  if (!Number.isFinite(value)) {
+    console.error(`[SciPyTs/special] ${variable_name} が有限値ではありません。`, { value, variable_name });
+    throw new Error(`${variable_name} が有限値ではありません。`);
   }
-  for (let i = 0; i < v.length; i++) result[i] /= sum
-  return result
-}
+  return value;
+};
+
+//#endregion
+
+//#region 公開関数
+
+/**
+ * シグモイド関数を適用します。
+ * @param input_vector 入力ベクトルです。
+ * @returns 適用後のベクトルです。
+ */
+export const sigmoid = (input_vector: Vec): Vec => {
+  const result = new Float64Array(input_vector.length);
+  for (let index = 0; index < input_vector.length; index += 1) {
+    result[index] = 1 / (1 + Math.exp(-input_vector[index]));
+  }
+  return result;
+};
+
+/**
+ * `sigmoid` の別名です。
+ * @param input_vector 入力ベクトルです。
+ * @returns 適用後のベクトルです。
+ */
+export const expit = (input_vector: Vec): Vec => sigmoid(input_vector);
+
+/**
+ * softmax を計算します。
+ * @param input_vector 入力ベクトルです。
+ * @returns softmax 結果です。
+ */
+export const softmax = (input_vector: Vec): Vec => {
+  const max_value = max(input_vector);
+  const result = new Float64Array(input_vector.length);
+  let sum_exponentials = 0;
+
+  for (let index = 0; index < input_vector.length; index += 1) {
+    result[index] = Math.exp(input_vector[index] - max_value);
+    sum_exponentials += result[index];
+  }
+
+  const divisor = assertFiniteScalar(sum_exponentials, "sum_exponentials");
+  for (let index = 0; index < input_vector.length; index += 1) {
+    result[index] /= divisor;
+  }
+
+  return result;
+};
+
+//#endregion

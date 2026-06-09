@@ -1,9 +1,14 @@
 /**
- * Synapse Module
- * TODO: Implement synapse functionality
+ * シナプスモジュールの公開情報です。
  */
 
-export const synapseModule = {
-  name: 'synapse',
-  version: '0.1.0',
-}
+//#region 公開定数
+
+const MODULE_VERSION = "0.1.0";
+
+export const synapse_module = {
+  name: "synapse",
+  version: MODULE_VERSION
+};
+
+//#endregion

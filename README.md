@@ -7,6 +7,7 @@
 ## Overview
 
 This project implements a biologically-inspired artificial general intelligence system using:
+
 - **R-STDP** (Reward-modulated Spike-Timing-Dependent Plasticity)
 - **Structural Plasticity** - Dynamic synapse/neuron creation and pruning
 - **Homeostatic Control** - Firing rate and threshold regulation
@@ -45,8 +46,7 @@ ProjectTailFairy/
 └── Docs/                   # Documentation
 ```
 
-**Dependencies (one-directional; reverse imports prohibited):**
-`Playground` (pages) → `Model/Classes` → `Model/Utils`; `Playground`/`Model` → `TranslatedLibraries/NumPyTs`; `TranslatedLibraries/SciPyTs` → `TranslatedLibraries/NumPyTs`. Reverse imports are prohibited.
+**Dependencies (one-directional; reverse imports prohibited):** `Playground` (pages) → `Model/Classes` → `Model/Utils`; `Playground`/`Model` → `TranslatedLibraries/NumPyTs`; `TranslatedLibraries/SciPyTs` → `TranslatedLibraries/NumPyTs`. Reverse imports are prohibited.
 
 ## Branch Strategy
 

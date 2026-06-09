@@ -1,9 +1,14 @@
 /**
- * Learning Module
- * TODO: Implement learning functionality
+ * 学習モジュールの公開情報です。
  */
 
-export const learningModule = {
-  name: 'learning',
-  version: '0.1.0',
-}
+//#region 公開定数
+
+const MODULE_VERSION = "0.1.0";
+
+export const learning_module = {
+  name: "learning",
+  version: MODULE_VERSION
+};
+
+//#endregion

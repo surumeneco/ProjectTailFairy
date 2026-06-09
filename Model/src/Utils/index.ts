@@ -1,3 +1,3 @@
-export * from './Activation'
-export * from './LinAlgHelpers'
-export * from './Gpu'
+export * from "./Activation";
+export * from "./Gpu";
+export * from "./LinAlgHelpers";
