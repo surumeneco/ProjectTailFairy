@@ -6,11 +6,9 @@ node_modules/
 dist/
 .nuxt/
 .output/
-.turbo/
 
 # IDE
 .idea/
-.vscode/
 *.swp
 *.swo
 *~
@@ -32,10 +30,6 @@ Thumbs.db
 .env
 .env.local
 .env.*.local
-
-# Experiment outputs
-experiments/**/results/
-experiments/**/checkpoints/
 
 # WebGPU shader cache
 .gpu-cache/

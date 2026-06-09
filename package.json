@@ -5,26 +5,28 @@
   "description": "Self-organizing AGI agent based on Spiking Neural Networks",
   "type": "module",
   "scripts": {
-    "dev": "turbo dev",
-    "build": "turbo build",
-    "test": "turbo test",
-    "lint": "turbo lint",
+    "lint": "eslint .",
     "format": "prettier --write .",
-    "clean": "turbo clean"
+    "format:check": "prettier --check .",
+    "test": "pnpm -r test",
+    "test:model": "pnpm --filter @tail-fairy/model test",
+    "test:numerical": "pnpm --filter @tail-fairy/numerical test"
   },
   "devDependencies": {
+    "@eslint/js": "^9.0.0",
     "@types/node": "^20.10.0",
+    "@webgpu/types": "^0.1.40",
+    "eslint": "^9.0.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-jsdoc": "^48.0.0",
+    "eslint-plugin-simple-import-sort": "^12.0.0",
     "prettier": "^3.1.0",
-    "turbo": "^2.0.0",
     "typescript": "^5.3.0",
+    "typescript-eslint": "^8.0.0",
     "vitest": "^1.0.0"
   },
-  "packageManager": "pnpm@8.15.0",
+  "packageManager": "pnpm@10.28.1",
   "engines": {
     "node": ">=20.0.0"
-  },
-  "workspaces": [
-    "packages/*",
-    "apps/*"
-  ]
+  }
 }

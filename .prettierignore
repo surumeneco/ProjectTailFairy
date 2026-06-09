@@ -1,0 +1,8 @@
+**/dist/
+**/.nuxt/
+**/.output/
+**/coverage/
+node_modules/
+pnpm-lock.yaml
+# WGSL shaders are not TypeScript and are excluded from Prettier
+**/*.wgsl

@@ -1,0 +1,8 @@
+{
+  "printWidth": 120,
+  "trailingComma": "none",
+  "arrowParens": "avoid",
+  "proseWrap": "never",
+  "htmlWhitespaceSensitivity": "strict",
+  "endOfLine": "lf"
+}
