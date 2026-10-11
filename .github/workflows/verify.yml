@@ -3,7 +3,7 @@ name: Verify
 on:
   push:
     branches:
-      - feature/consolidate-restructure-20261011
+      - main
   pull_request:
     branches:
       - main
