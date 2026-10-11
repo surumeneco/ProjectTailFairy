@@ -1,5 +1,5 @@
 {
-  "name": "@tail-fairy/model",
+  "name": "@project-tail-fairy/model",
   "version": "0.1.0",
   "type": "module",
   "main": "./dist/index.js",
@@ -17,7 +17,7 @@
     "lint": "eslint src/ tests/"
   },
   "dependencies": {
-    "@tail-fairy/numerical": "workspace:*"
+    "@project-tail-fairy/numpy-ts": "workspace:*"
   },
   "devDependencies": {
     "@webgpu/types": "^0.1.40",

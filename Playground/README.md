@@ -6,5 +6,4 @@
 - `pages/Experiments/` — 性能テスト・ベンチマーク用ページ
 - `composables/` / `utils/` — Web Worker・遺伝的アルゴリズム実行（Nuxt の範疇）
 
-Nuxt 本体のスキャフォールド（`nuxt.config.ts` 等）は別タスクで導入する。
-リポジトリ内のファイルは相対パス/エイリアスで直接 import し、通常の Nuxt ビルドコマンドで構築する。
+Nuxt 本体のスキャフォールド（`nuxt.config.ts` 等）は別タスクで導入する。リポジトリ内のファイルは相対パス/エイリアスで直接 import し、通常の Nuxt ビルドコマンドで構築する。

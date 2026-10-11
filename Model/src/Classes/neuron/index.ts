@@ -1,9 +1,14 @@
 /**
- * Neuron Module
- * TODO: Implement neuron functionality
+ * ニューロンモジュールの公開情報です。
  */
 
-export const neuronModule = {
-  name: 'neuron',
-  version: '0.1.0',
-}
+//#region 公開定数
+
+const MODULE_VERSION = "0.1.0";
+
+export const neuron_module = {
+  name: "neuron",
+  version: MODULE_VERSION
+};
+
+//#endregion

@@ -1,29 +1,26 @@
 // @ts-check
 import eslint from "@eslint/js";
-import tseslint from "typescript-eslint";
+import { defineConfig } from "eslint/config";
 import prettier from "eslint-config-prettier";
 import jsdoc from "eslint-plugin-jsdoc";
 import simpleImportSort from "eslint-plugin-simple-import-sort";
+import tseslint from "typescript-eslint";
 
 // ESLint takes priority; Prettier (eslint-config-prettier) disables ESLint formatting rules.
 // Base: typescript-eslint strict-type-checked. Formatting is handled by Prettier (format-on-save).
-export default tseslint.config(
+export default defineConfig(
   {
-    ignores: [
-      "**/dist/**",
-      "**/.nuxt/**",
-      "**/.output/**",
-      "**/node_modules/**",
-      "**/coverage/**",
-      "**/*.wgsl"
-    ]
+    ignores: ["**/dist/**", "**/.nuxt/**", "**/.output/**", "**/node_modules/**", "**/coverage/**", "**/*.wgsl"]
   },
   eslint.configs.recommended,
   ...tseslint.configs.strictTypeChecked,
   {
     languageOptions: {
       parserOptions: {
-        projectService: true,
+        projectService: {
+          allowDefaultProject: ["eslint.config.js", "Model/vitest.config.ts", "TranslatedLibraries/*/vitest.config.ts"],
+          maximumDefaultProjectFileMatchCount_THIS_WILL_SLOW_DOWN_LINTING: 4
+        },
         tsconfigRootDir: import.meta.dirname
       }
     },
@@ -44,10 +41,7 @@ export default tseslint.config(
         // Object properties are free (external API keys, etc. handled per-site)
         { selector: "property", format: null }
       ],
-      "@typescript-eslint/no-unused-vars": [
-        "error",
-        { argsIgnorePattern: "^_", varsIgnorePattern: "^_" }
-      ],
+      "@typescript-eslint/no-unused-vars": ["error", { argsIgnorePattern: "^_", varsIgnorePattern: "^_" }],
       "@typescript-eslint/consistent-type-imports": "error",
       "simple-import-sort/imports": "error",
       "simple-import-sort/exports": "error",

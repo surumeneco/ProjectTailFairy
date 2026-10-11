@@ -5,6 +5,7 @@
 The project has been migrated from Python to TypeScript.
 
 ### Old Python files removed:
+
 - `core/__init__.py`
 - `core/neuron/__init__.py`
 - `core/synapse/__init__.py`
@@ -15,6 +16,7 @@ The project has been migrated from Python to TypeScript.
 - `pyproject.toml`
 
 ### New TypeScript structure:
+
 - `packages/core/` - Core SNN engine
 - `packages/shared/` - Shared types
 - `packages/simulation/` - Simulation runtime
@@ -22,4 +24,5 @@ The project has been migrated from Python to TypeScript.
 - `apps/cli/` - CLI tools
 
 ### WebGPU acceleration:
+
 WGSL shaders in `packages/core/shaders/` provide GPU-accelerated neuron computation.
