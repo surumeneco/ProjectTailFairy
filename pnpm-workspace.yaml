@@ -1,4 +1,4 @@
 packages:
-  - 'Model'
-  - 'TranslatedLibraries/*'
-  - 'Playground'
+  - Model
+  - "TranslatedLibraries/*"
+  - Playground
