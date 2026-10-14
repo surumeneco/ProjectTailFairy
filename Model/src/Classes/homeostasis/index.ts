@@ -12,3 +12,9 @@ export const homeostasis_module = {
 };
 
 //#endregion
+
+//#region 恒常性の基礎演算
+
+export { updateFiringRate, updateThreshold } from "./Homeostasis";
+
+//#endregion
