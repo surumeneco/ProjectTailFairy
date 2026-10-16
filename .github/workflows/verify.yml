@@ -4,9 +4,11 @@ on:
   push:
     branches:
       - main
+      - develop
   pull_request:
     branches:
       - main
+      - develop
   workflow_dispatch:
 
 permissions:
@@ -17,6 +19,22 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
+      - name: Check pull request branch direction
+        if: github.event_name == 'pull_request'
+        env:
+          BASE_REF: ${{ github.base_ref }}
+          HEAD_REF: ${{ github.head_ref }}
+        run: |
+          case "$BASE_REF:$HEAD_REF" in
+            develop:feature/*|develop:hotfix/*|main:develop|main:hotfix/*)
+              echo "Allowed PR direction: $HEAD_REF -> $BASE_REF"
+              ;;
+            *)
+              echo "::error::Disallowed PR direction: $HEAD_REF -> $BASE_REF"
+              echo "Use feature/* -> develop, hotfix/* -> main/develop, or develop -> main."
+              exit 1
+              ;;
+          esac
       - name: Checkout
         uses: actions/checkout@v4
       - name: Install pnpm
