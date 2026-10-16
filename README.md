@@ -50,13 +50,18 @@ ProjectTailFairy/
 
 ## Branch Strategy
 
-- `main` - Stable version; the newest currently-working state
-- `develop` - Development integration branch
-- `feature` - Feature development branches
-- `release` - Completed state per phase/stage
-- `sandbox` - Mathematical verification and experimental branches
+- `main` — Stable baseline. Changes only through a reviewed `develop -> main` promotion or an urgent `hotfix/* -> main` PR; mark stable checkpoints with release tags.
+- `develop` — Latest integrated development state. Base new feature branches on `develop` and merge them back through PRs.
+- `feature/*` — One independently reviewable implementation or refactoring task; branch from `develop`, PR into `develop`.
+- `hotfix/*` — Urgent corrections based on `main`; PR into `main` and propagate the same fix into `develop`.
+- `archive/*` — Historical read-only references, never a source for routine merges.
+- `release/*` — Optional, only when a dedicated stabilization period is necessary. Not part of the default flow.
 
-Direct commits to `main` / `develop` / `release` are prohibited in principle (reflect via merge or cherry-pick).
+Direct commits to `main` and `develop` are prohibited by project policy. Do not force-push either branch after the one-time October 2026 migration. CI checks formatting, lint, TypeScript builds, tests, and PR direction for both branches. GitHub branch protection/rulesets must additionally be enabled in repository settings for server-side enforcement.
+
+The legacy `develop` prototype (HEAD `b1928b5ed224704a169e7f0d9e73a45456521ebe`) is preserved in `archive/develop-legacy-20261016`. The modern `develop` was re-established from `main` at `6edf796e6282f10addd7c032a1236d2769ce6428` on October 16, 2026. The old `packages/core` prototype is research history, not an automatically integrated implementation.
+
+See [branch and release operations](Docs/branching-and-release.md) for merge rules, promotion criteria, required GitHub settings, and legacy migration details.
 
 ## Getting Started
 
