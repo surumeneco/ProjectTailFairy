@@ -15,13 +15,11 @@
 
 ## 2026-10-16 初回移行
 
-| 項目 | コミットまたは結果 |
-| --- | --- |
-| 移行前`main` | `6edf796e6282f10addd7c032a1236d2769ce6428` |
-| 移行前`develop` | `b1928b5ed224704a169e7f0d9e73a45456521ebe` |
-| 旧developの保全先 | `archive/develop-legacy-20261016`（旧developと同一SHA） |
-| 移行後の`develop` | `main`の`6edf796e6282f10addd7c032a1236d2769ce6428`に一度だけ付け替え |
-| 検証 | 移行直後の`main...develop`比較はahead=0、behind=0 |
+- 移行前`main`: `6edf796e6282f10addd7c032a1236d2769ce6428`
+- 移行前`develop`: `b1928b5ed224704a169e7f0d9e73a45456521ebe`
+- 旧developの保全先: `archive/develop-legacy-20261016`（旧developと同一SHA）
+- 移行後`develop`: `main`の`6edf796e6282f10addd7c032a1236d2769ce6428`に一度だけ付け替え
+- 検証: 移行直後の`main...develop`比較はahead=0、behind=0
 
 移行前は両ブランチが共通祖先`7685eb3cfee7866973d15bec94e0914c559a999d`から分岐し、旧develop固有14コミット、main固有70コミットがあった。旧developの`packages/core`・`experiments/phase1-fixed`などの試作を新しい`Model` / `Playground`構成へ自動マージしていない。移植が必要なら、採用済みPromptQL仕様に照らして、独立した`feature/*`で再実装・再検証する。旧コードの存在は完成または仕様確定を示さない。
 
@@ -29,10 +27,8 @@
 
 ## PRの規則
 
-| マージ先 | 許可する作業元 | 条件 |
-| --- | --- | --- |
-| `develop` | `feature/*`, `hotfix/*` | 個別PR、変更範囲を説明、CI成功 |
-| `main` | `develop`, `hotfix/*` | 安定版昇格または緊急修正、CI成功とリスク評価 |
+- `develop`へのPRは`feature/*`または`hotfix/*`からのみ。個別変更の範囲説明とCI成功が必要。
+- `main`へのPRは`develop`（安定版昇格）または`hotfix/*`（緊急修正）からのみ。CI成功とリスク評価が必要。
 
 - 原則としてfeature PRはSquash Merge、developからmainへの安定版昇格はMerge Commit（取り込んだdevelopコミットの追跡性を重視）を使用する。
 - `main`への安定版昇格で新しいマージコミットができても、ファイル内容がdevelopと同一なら機械的なバックマージは不要。mainに独自変更がある場合（hotfix等）は必ずdevelopへ反映する。
