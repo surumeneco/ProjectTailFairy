@@ -57,3 +57,5 @@ jobs:
         run: pnpm exec tsc --build
       - name: Test
         run: pnpm test
+      - name: Build Playground research UI
+        run: pnpm build:playground
