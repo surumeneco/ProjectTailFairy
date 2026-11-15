@@ -2,7 +2,7 @@
 
 **Self-organizing AGI agent based on Spiking Neural Networks**
 
-> Full TypeScript implementation with WebGPU acceleration
+> TypeScript research workspace with a planned WebGPU backend
 
 ## Overview
 
@@ -19,7 +19,7 @@ This project implements a biologically-inspired artificial general intelligence 
 - **GPU Computing**: WebGPU + WGSL compute shaders (`Model/src/Utils/Gpu/`)
 - **Package Manager**: pnpm with workspaces (Turborepo removed)
 - **Testing**: Vitest (per-package config, bundled at root)
-- **Frontend / Verification env**: Nuxt 3 (`Playground/`)
+- **Frontend / Verification env**: Nuxt 4 (`Playground/`, browser-only research UI)
 - **Lint / Format**: ESLint (Flat Config, strict-type-checked) + Prettier (format-on-save)
 
 ## Project Structure
@@ -39,9 +39,9 @@ ProjectTailFairy/
 │   └── SciPyTs/            # SciPy translation (`import * as scipy from "@project-tail-fairy/scipy-ts"`)
 │       ├── src/
 │       └── tests/
-├── Playground/             # Not published: Nuxt verification environment
-│   ├── pages/Phases/       # Per-phase achievement-check pages
-│   ├── pages/Experiments/  # Performance tests / benchmarks
+├── Playground/             # Not published: Nuxt 4 research UI scaffold
+│   ├── app/pages/Phases/   # Per-phase achievement-check pages
+│   ├── app/pages/Experiments/  # Performance tests / benchmarks
 │   └── composables/ utils/ # Web Worker / genetic-algorithm execution
 └── Docs/                   # Documentation
 ```
@@ -73,6 +73,8 @@ pnpm test            # Run all package tests
 pnpm test:model      # Model only
 pnpm test:numpy      # NumPyTs only
 pnpm test:scipy      # SciPyTs only
+pnpm dev:playground  # Nuxt research interface
+pnpm build:playground # Nuxt production build
 ```
 
 ## WebGPU Requirements
